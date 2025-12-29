@@ -83,24 +83,22 @@ end
 
 -- Event handler
 MSF:RegisterEvent("ADDON_LOADED")
-MSF:RegisterEvent("PLAYER_LOGIN")
+MSF:RegisterEvent("PLAYER_ENTERING_WORLD")
 MSF:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == "MouseSensitivityFix" then
-        -- Restore saved settings
-        if MouseSensitivityFixDB.mouseSensitivity then
-            SafeSetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
-        end
-
         print("|cff00ffffMouse Sensitivity Fix loaded!|r")
         print("Type |cff00ff00/mousesens|r or |cff00ff00/ms|r for help")
-    elseif event == "PLAYER_LOGIN" then
-        -- Apply settings on login
-        if MouseSensitivityFixDB.mouseSensitivity then
-            SafeSetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
-        end
-        if MouseSensitivityFixDB.mouseLookSpeed then
-            SafeSetCVar("cameraYawMoveSpeed", MouseSensitivityFixDB.mouseLookSpeed)
-        end
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        -- Delay application to ensure WoW has finished its override
+        C_Timer.After(1.5, function()
+            if MouseSensitivityFixDB.mouseSensitivity then
+                SafeSetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
+                print(string.format("|cff00ffffMSF:|r Mouse sensitivity set to |cff00ff00%.3f|r", MouseSensitivityFixDB.mouseSensitivity))
+            end
+            if MouseSensitivityFixDB.mouseLookSpeed then
+                SafeSetCVar("cameraYawMoveSpeed", MouseSensitivityFixDB.mouseLookSpeed)
+            end
+        end)
     end
 end)
 

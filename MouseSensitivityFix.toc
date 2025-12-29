@@ -3,5 +3,6 @@
 ## Notes: Extends mouse sensitivity range for better desktop matching
 ## Author: Custom
 ## Version: 1.0
+## SavedVariables: MouseSensitivityFixDB
 
 MouseSensitivityFix.lua
