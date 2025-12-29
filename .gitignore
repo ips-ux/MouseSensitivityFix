@@ -1,0 +1,13 @@
+# WoW SavedVariables
+*.bak
+*.old
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
