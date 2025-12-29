@@ -75,25 +75,18 @@ SlashCmdList["MOUSELOOK"] = function(msg)
     end
 end
 
--- Config panel slash command
-SLASH_MOUSESENSCONFIG1 = "/msconfig"
-SlashCmdList["MOUSESENSCONFIG"] = function()
-    InterfaceOptionsFrame_OpenToCategory("Mouse Sensitivity Fix")
-end
-
 -- Event handler
 MSF:RegisterEvent("ADDON_LOADED")
 MSF:RegisterEvent("PLAYER_ENTERING_WORLD")
 MSF:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == "MouseSensitivityFix" then
-        print("|cff00ffffMouse Sensitivity Fix loaded!|r")
-        print("Type |cff00ff00/mousesens|r or |cff00ff00/ms|r for help")
+        -- Silent load, message will show on PLAYER_ENTERING_WORLD
     elseif event == "PLAYER_ENTERING_WORLD" then
         -- Delay application to ensure WoW has finished its override
         C_Timer.After(1.5, function()
             if MouseSensitivityFixDB.mouseSensitivity then
                 SafeSetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
-                print(string.format("|cff00ffffMSF:|r Mouse sensitivity set to |cff00ff00%.3f|r", MouseSensitivityFixDB.mouseSensitivity))
+                print(string.format("|cff00ffff[MSF]|r Mouse Sensitivity: |cff00ff00%.3f|r (type |cff00ff00/ms|r or |cff00ff00/mouse|r to edit)", MouseSensitivityFixDB.mouseSensitivity))
             end
             if MouseSensitivityFixDB.mouseLookSpeed then
                 SafeSetCVar("cameraYawMoveSpeed", MouseSensitivityFixDB.mouseLookSpeed)
@@ -101,46 +94,3 @@ MSF:SetScript("OnEvent", function(self, event, arg1)
         end)
     end
 end)
-
--- Create a simple config panel
-local config = CreateFrame("Frame", "MouseSensFixConfig", UIParent)
-config.name = "Mouse Sensitivity Fix"
-
-local title = config:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-title:SetPoint("TOPLEFT", 16, -16)
-title:SetText("Mouse Sensitivity Fix")
-
-local desc = config:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-desc:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
-desc:SetWidth(600)
-desc:SetJustifyH("LEFT")
-desc:SetText("This addon allows you to set mouse sensitivity below the normal minimum of 0.5.\nUse /ms <value> to set sensitivity between 0.01 and 3.0")
-
-local currentText = config:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-currentText:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -20)
-
-local slider = CreateFrame("Slider", "MSFSlider", config, "OptionsSliderTemplate")
-slider:SetPoint("TOPLEFT", currentText, "BOTTOMLEFT", 0, -20)
-slider:SetMinMaxValues(MIN_SENSITIVITY * 100, MAX_SENSITIVITY * 100)
-slider:SetValueStep(1)
-slider:SetWidth(400)
-slider:SetHeight(20)
-getglobal(slider:GetName() .. 'Low'):SetText(string.format("%.2f", MIN_SENSITIVITY))
-getglobal(slider:GetName() .. 'High'):SetText(string.format("%.2f", MAX_SENSITIVITY))
-getglobal(slider:GetName() .. 'Text'):SetText("Mouse Sensitivity")
-
-slider:SetScript("OnValueChanged", function(self, value)
-    local actualValue = value / 100
-    SafeSetCVar("mouseSpeed", actualValue)
-    currentText:SetText(string.format("Current Value: %.3f", actualValue))
-end)
-
-config:SetScript("OnShow", function(self)
-    local current = tonumber(GetCVar("mouseSpeed")) or 0.5
-    slider:SetValue(current * 100)
-    currentText:SetText(string.format("Current Value: %.3f", current))
-end)
-
-InterfaceOptions_AddCategory(config)
-
-print("|cff00ff00MouseSensitivityFix initialized|r")
