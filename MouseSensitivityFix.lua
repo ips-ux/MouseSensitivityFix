@@ -11,28 +11,27 @@ MouseSensitivityFixDB = MouseSensitivityFixDB or {
     mouseLookSpeed = 90
 }
 
--- Hook the mouse sensitivity slider
-local function HookMouseSettings()
-    -- Hook SetCVar for mouse sensitivity
-    local oldSetCVar = SetCVar
-    SetCVar = function(cvar, value, ...)
-        if cvar == "mouseSpeed" then
-            local numValue = tonumber(value)
-            if numValue then
-                -- Clamp to our extended range
-                numValue = math.max(MIN_SENSITIVITY, math.min(MAX_SENSITIVITY, numValue))
-                MouseSensitivityFixDB.mouseSensitivity = numValue
-                return oldSetCVar(cvar, tostring(numValue), ...)
-            end
-        elseif cvar == "cameraYawMoveSpeed" then
-            local numValue = tonumber(value)
-            if numValue then
-                MouseSensitivityFixDB.mouseLookSpeed = numValue
-                return oldSetCVar(cvar, tostring(numValue), ...)
-            end
+-- Safe wrapper for SetCVar that doesn't taint
+local function SafeSetCVar(cvar, value)
+    if cvar == "mouseSpeed" then
+        local numValue = tonumber(value)
+        if numValue then
+            -- Clamp to our extended range
+            numValue = math.max(MIN_SENSITIVITY, math.min(MAX_SENSITIVITY, numValue))
+            MouseSensitivityFixDB.mouseSensitivity = numValue
+            -- Directly set the cvar without hooking
+            SetCVar(cvar, tostring(numValue))
+            return true
         end
-        return oldSetCVar(cvar, value, ...)
+    elseif cvar == "cameraYawMoveSpeed" then
+        local numValue = tonumber(value)
+        if numValue then
+            MouseSensitivityFixDB.mouseLookSpeed = numValue
+            SetCVar(cvar, tostring(numValue))
+            return true
+        end
     end
+    return false
 end
 
 -- Slash commands for manual adjustment
@@ -42,8 +41,7 @@ SLASH_MOUSESENS3 = "/mouse"
 SlashCmdList["MOUSESENS"] = function(msg)
     local value = tonumber(msg)
     if value then
-        value = math.max(MIN_SENSITIVITY, math.min(MAX_SENSITIVITY, value))
-        SetCVar("mouseSpeed", value)
+        SafeSetCVar("mouseSpeed", value)
         print(string.format("|cff00ff00Mouse Sensitivity set to: %.3f|r", value))
     else
         local current = GetCVar("mouseSpeed")
@@ -66,7 +64,7 @@ SlashCmdList["MOUSELOOK"] = function(msg)
     local value = tonumber(msg)
     if value then
         value = math.max(1, math.min(270, value))
-        SetCVar("cameraYawMoveSpeed", value)
+        SafeSetCVar("cameraYawMoveSpeed", value)
         print(string.format("|cff00ff00Mouse Look Speed set to: %d|r", value))
     else
         local current = GetCVar("cameraYawMoveSpeed")
@@ -88,11 +86,9 @@ MSF:RegisterEvent("ADDON_LOADED")
 MSF:RegisterEvent("PLAYER_LOGIN")
 MSF:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == "MouseSensitivityFix" then
-        HookMouseSettings()
-
         -- Restore saved settings
         if MouseSensitivityFixDB.mouseSensitivity then
-            SetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
+            SafeSetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
         end
 
         print("|cff00ffffMouse Sensitivity Fix loaded!|r")
@@ -100,10 +96,10 @@ MSF:SetScript("OnEvent", function(self, event, arg1)
     elseif event == "PLAYER_LOGIN" then
         -- Apply settings on login
         if MouseSensitivityFixDB.mouseSensitivity then
-            SetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
+            SafeSetCVar("mouseSpeed", MouseSensitivityFixDB.mouseSensitivity)
         end
         if MouseSensitivityFixDB.mouseLookSpeed then
-            SetCVar("cameraYawMoveSpeed", MouseSensitivityFixDB.mouseLookSpeed)
+            SafeSetCVar("cameraYawMoveSpeed", MouseSensitivityFixDB.mouseLookSpeed)
         end
     end
 end)
@@ -137,7 +133,7 @@ getglobal(slider:GetName() .. 'Text'):SetText("Mouse Sensitivity")
 
 slider:SetScript("OnValueChanged", function(self, value)
     local actualValue = value / 100
-    SetCVar("mouseSpeed", actualValue)
+    SafeSetCVar("mouseSpeed", actualValue)
     currentText:SetText(string.format("Current Value: %.3f", actualValue))
 end)
 
