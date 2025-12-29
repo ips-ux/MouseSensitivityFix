@@ -21,7 +21,7 @@ MouseSensitivityFix allows you to set mouse sensitivity as low as **0.01** (or a
 
 ### Quick Start
 
-Type `/ms 0.2` - this is our recommended starting point (closest to developer settings)
+Type `/ms 0.2` - this felt closest to "System" settings to me
 
 ### Commands
 
