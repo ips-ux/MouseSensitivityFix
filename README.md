@@ -1,20 +1,21 @@
 # MouseSensitivityFix
 
-A World of Warcraft addon that extends mouse sensitivity range beyond the default limits, allowing you to match your desktop mouse speed.
+An Ascension WoW addon that extends mouse sensitivity range beyond the default limits, allowing you to match your desktop mouse speed.
 
 ## The Problem
 
-WoW's default mouse sensitivity slider only goes from 0.5 to 1.5, which means even at the lowest setting (0.5), your in-game mouse is still significantly faster than your desktop mouse speed. This makes precise cursor movement difficult and feels inconsistent.
+WoW's default mouse sensitivity slider only goes from 0.5 to 1.5, which means even at the lowest setting (0.5), your in-game mouse is still significantly faster than your desktop mouse speed. Combine this with a DPI selector on the bottom of your mouse and we have a serious UX issue.
 
 ## The Solution
 
-MouseSensitivityFix allows you to set mouse sensitivity as low as **0.01** (or as high as 3.0), giving you full control to match your preferred desktop mouse speed.
+MouseSensitivityFix allows you to set mouse sensitivity as low as **0.01** (or as high as 3.0 for whatever crazy reason - thanks Claude), giving you full control to match your preferred desktop mouse speed.
 
 ## Installation
 
 1. Download the latest release
 2. Extract to your `Interface/AddOns` folder
-3. Restart WoW or type `/reload`
+3. Remove -main from filename | "MouseSensitivityFix" should be filename.
+4. Restart Ascension
 
 ## Usage
 
