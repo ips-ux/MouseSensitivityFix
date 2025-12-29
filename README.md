@@ -12,7 +12,7 @@ MouseSensitivityFix allows you to set mouse sensitivity as low as **0.01** (or a
 
 ## Installation
 
-1. Download the latest release
+1. Download the latest release (Select "Code" at the top of the page > download zip)
 2. Extract to your `Interface/AddOns` folder
 3. Remove -main from filename | "MouseSensitivityFix" should be filename.
 4. Restart Ascension
